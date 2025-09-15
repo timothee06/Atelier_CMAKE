@@ -1,45 +1,76 @@
 name: Automatisation des tests
 on: push
-
 jobs:
   Compilation:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Installer les outils
-        run: sudo apt-get update && sudo apt-get install -y build-essential cmake
-
       - name: Compilation
         run: |
-          mkdir -p build
+          last_directory=$(basename ${{ runner.workspace }})
+          git clone https://github.com/${{ github.repository }}.git
+          cd ./$last_directory
+          mkdir build
           cd build
           cmake ..
           make
+          make test
 
-      - name: Exécuter les tests CMake
-        run: |
-          cd build
-          ctest --output-on-failure || true
+  Test_Add:
+      runs-on: ubuntu-latest
+      needs: Compilation
+      steps:
+        - name: Test fonction add
+          run: |
+            last_directory=$(basename ${{ runner.workspace }})
+            git clone https://github.com/${{ github.repository }}.git
+            cd ./$last_directory
+            mkdir build
+            cd build
+            cmake ..
+            make
+            ./src/calculator add 10 5
 
-  Tests_Fonctions:
-    runs-on: ubuntu-latest
-    needs: Compilation
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  Test_Div:
+      runs-on: ubuntu-latest
+      needs: Compilation
+      steps:
+        - name: Test fonction div
+          run: |
+            last_directory=$(basename ${{ runner.workspace }})
+            git clone https://github.com/${{ github.repository }}.git
+            cd ./$last_directory
+            mkdir build
+            cd build
+            cmake ..
+            make
+            ./src/calculator div 1 5
 
-      - name: Exécuter plusieurs tests individuellement
-        run: |
-          cd build
-          echo "=== Test add ==="
-          ./src/calculator add 10 5 || echo "Test add échoué"
-          echo "=== Test sub ==="
-          ./src/calculator sub 7 2 || echo "Test sub échoué"
-          echo "=== Test mul ==="
-          ./src/calculator mul 3 4 || echo "Test mul échoué"
-          echo "=== Test div ==="
-          ./src/calculator div 8 2 || echo "Test div échoué"
-          echo "=== Test car ==="
-          ./src/calculator car 16 || echo "Test car échoué"
+  Test_Mul:
+      runs-on: ubuntu-latest
+      needs: Compilation
+      steps:
+        - name: Test fonction mul
+          run: |
+            last_directory=$(basename ${{ runner.workspace }})
+            git clone https://github.com/${{ github.repository }}.git
+            cd ./$last_directory
+            mkdir build
+            cd build
+            cmake ..
+            make
+            ./src/calculator mul 5 5
+
+  Test_Sub:
+      runs-on: ubuntu-latest
+      needs: Compilation
+      steps:
+        - name: Test fonction sub
+          run: |
+            last_directory=$(basename ${{ runner.workspace }})
+            git clone https://github.com/${{ github.repository }}.git
+            cd ./$last_directory
+            mkdir build
+            cd build
+            cmake ..
+            make
+            ./src/calculator sub 3 -2
