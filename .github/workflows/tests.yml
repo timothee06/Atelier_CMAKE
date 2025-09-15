@@ -1,37 +1,5 @@
 name: Automatisation des tests
 on: push
-jobs:
-  Compilation:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Compilation
-        run: |
-          last_directory=$(basename ${{ runner.workspace }})
-          git clone https://github.com/${{ github.repository }}.git
-          cd ./$last_directory
-          mkdir build
-          cd build
-          cmake ..
-          make
-          make test
-
-  Test_Add:
-    runs-on: ubuntu-latest
-    needs: Compilation
-    steps:
-      - name: Test fonction add
-        run: |
-          last_directory=$(basename ${{ runner.workspace }})
-          git clone https://github.com/${{ github.repository }}.git
-          cd ./$last_directory
-          mkdir build
-          cd build
-          cmake ..
-          make
-          ./src/calculator add 10 5
-
-name: Automatisation des tests
-on: push
 
 jobs:
   Compilation:
@@ -40,7 +8,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Installer les outils de compilation
+      - name: Installer les outils
         run: sudo apt-get update && sudo apt-get install -y build-essential cmake
 
       - name: Compilation
@@ -53,10 +21,9 @@ jobs:
       - name: Exécuter les tests CMake
         run: |
           cd build
-          # ctest continue même si certains tests échouent
           ctest --output-on-failure || true
 
-  Test_Fonctions:
+  Tests_Fonctions:
     runs-on: ubuntu-latest
     needs: Compilation
     steps:
